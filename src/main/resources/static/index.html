@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hospital Management System</title>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem("hms-theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light")}catch(e){}</script>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--tx:#1c2330;--mu:#6a7482;--bd:#e6e9ee;--hov:#f3f5f8;--soft:rgba(15,118,110,.08);--ac:#0f766e;--ach:#0b5f59;--at:#0f766e;--inb:#d5dae1;--w:#b45309;--g:#15803d;--r:#b42318;--lowbg:rgba(217,119,6,.07);--tbg:#1c2330;--tfg:#fff;--sh:0 1px 2px rgba(16,24,40,.04)}
+:root[data-theme=dark]{color-scheme:dark;--bg:#0e1216;--card:#151a20;--tx:#e6eaee;--mu:#8a95a3;--bd:#232b34;--hov:#1b222a;--soft:rgba(45,212,191,.1);--ac:#13877d;--ach:#179a8f;--at:#5ccfc4;--inb:#2b3540;--w:#f0a64a;--g:#4cc38a;--r:#f0877d;--lowbg:rgba(217,119,6,.1);--tbg:#e8eef1;--tfg:#12181c;--sh:none}
+*{box-sizing:border-box}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:var(--inb);border-radius:9px;border:2px solid var(--bg)}
+body{margin:0;font:14px/1.55 Inter,"Segoe UI",system-ui,-apple-system,sans-serif;letter-spacing:-.003em;color:var(--tx);background:var(--bg);-webkit-font-smoothing:antialiased}
+.card,td,th,#box,.fld input,.fld select,.fld textarea,.tools input,#side{transition:background-color .2s,border-color .2s,color .2s}
+#side{position:fixed;inset:0 auto 0 0;width:232px;background:var(--card);border-right:1px solid var(--bd);padding:18px 12px;overflow:auto;z-index:30;transition:transform .25s}
+.brand{display:flex;gap:10px;align-items:center;margin:0 8px 22px;font-weight:600;font-size:15px;line-height:1.2}
+.brand small{display:block;font-weight:400;font-size:12px;color:var(--mu)}
+.logo{width:30px;height:30px;border-radius:8px;background:var(--ac);color:#fff;display:grid;place-items:center;font-size:17px;font-weight:600}
+#side a{display:block;padding:8px 12px;border-radius:8px;color:var(--mu);text-decoration:none;margin-bottom:2px;font-weight:500}
+#side a:hover{background:var(--hov);color:var(--tx)}
+#side a.on{background:var(--soft);color:var(--at)}
+.tg{margin:18px 4px 0;width:calc(100% - 8px);padding:8px;border-radius:8px;border:1px solid var(--bd);background:none;color:var(--mu);font:inherit;font-weight:500;cursor:pointer}
+.tg:hover{background:var(--hov);color:var(--tx)}
+#top{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:var(--card);border-bottom:1px solid var(--bd);align-items:center;padding:0 14px;gap:12px;z-index:25;font-weight:600}
+#top button{background:none;border:0;color:var(--tx);font:inherit;font-size:20px;cursor:pointer}
+#tg2{margin-left:auto;font-size:13px!important;color:var(--mu)!important}
+#main{margin-left:232px;padding:32px 40px;min-height:100vh;max-width:1320px}
+#main>*{animation:fade .25s ease both}
+@keyframes fade{from{opacity:0}}
+#bar{display:none;position:fixed;top:0;left:0;right:0;height:2px;z-index:99;background:linear-gradient(90deg,transparent,var(--ac),transparent);background-size:50% 100%;animation:ld 1s linear infinite}
+@keyframes ld{from{background-position:-50% 0}to{background-position:150% 0}}
+h2{margin:0;font-size:22px;font-weight:600;letter-spacing:-.02em}
+.sub{margin:2px 0 0;color:var(--mu)}
+h3{margin:28px 0 12px;font-size:15px;font-weight:600}
+h4{margin:0 0 14px;font-size:13px;font-weight:600;color:var(--mu)}
+.head{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-bottom:20px}
+.tools{display:flex;gap:10px;flex-wrap:wrap}
+.tools input{padding:8px 12px 8px 34px;border:1px solid var(--bd);border-radius:8px;min-width:250px;color:var(--tx);background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' fill='none' stroke='%238a95a3' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='6.5' cy='6.5' r='5'/%3E%3Cpath d='m10.5 10.5 3.5 3.5'/%3E%3C/svg%3E") 11px center no-repeat;font:inherit}
+.tools input:focus,.fld input:focus,.fld select:focus,.fld textarea:focus{outline:0;border-color:var(--ac);box-shadow:0 0 0 3px var(--soft)}
+.card{background:var(--card);border-radius:12px;box-shadow:var(--sh);padding:18px;border:1px solid var(--bd)}
+.tw{padding:0;overflow-x:auto}
+table{width:100%;border-collapse:collapse;white-space:nowrap}
+th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--bd)}
+th{color:var(--mu);font-weight:500;font-size:12px;padding-top:10px;padding-bottom:10px}
+tbody tr:hover td{background:var(--hov)}
+tr:last-child td{border-bottom:0}
+tr.low td{background:var(--lowbg)}
+tr.low td:first-child{box-shadow:inset 3px 0 0 #d97706}
+tr.low td b{color:var(--w)}
+.av{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;margin-right:10px;font-size:10.5px;font-weight:600;color:var(--mu);background:var(--hov);border:1px solid var(--bd);vertical-align:middle}
+.act{display:flex;gap:4px}
+.btn{background:var(--ac);color:#fff;border:1px solid transparent;border-radius:8px;padding:8px 14px;font:inherit;font-weight:500;cursor:pointer;transition:background .15s}
+.btn:hover{background:var(--ach)}
+.btn.sm{padding:3px 9px;font-size:12px;border-radius:6px}
+.btn.ghost,.btn.danger,.btn.ok{background:none;border-color:var(--bd);color:var(--tx)}
+.btn.ghost:hover{background:var(--hov)}
+.btn.danger{color:var(--r)}.btn.danger:hover{background:rgba(220,60,50,.09)}
+.btn.ok{color:var(--g)}.btn.ok:hover{background:rgba(34,160,90,.1)}
+.badge{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;font-weight:500;background:var(--hov);color:var(--mu)}
+.badge.Scheduled,.badge.Pending,.badge.Admitted{background:rgba(217,119,6,.12);color:var(--w)}
+.badge.Completed,.badge.Paid,.badge.Discharged{background:rgba(34,160,90,.12);color:var(--g)}
+.badge.Cancelled{background:rgba(220,60,50,.11);color:var(--r)}
+.mu{color:var(--mu)}
+.empty{text-align:center;padding:56px 10px;color:var(--mu);white-space:normal}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.stat span{display:block;color:var(--mu);font-size:12.5px}
+.stat b{display:block;margin-top:4px;font-size:26px;font-weight:600;letter-spacing:-.02em}
+.two{display:grid;grid-template-columns:1fr 1.3fr;gap:14px;margin-top:14px}
+.donut-w{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.donut{width:128px;height:128px;border-radius:50%;display:grid;place-content:center;text-align:center;position:relative;flex:none}
+.donut:before{content:"";position:absolute;inset:14px;border-radius:50%;background:var(--card)}
+.donut b,.donut small{position:relative;line-height:1.15}.donut b{font-size:22px;font-weight:600}.donut small{color:var(--mu);font-size:12px}
+.lg{list-style:none;margin:0;padding:0;flex:1;min-width:140px}
+.lg li{display:flex;align-items:center;gap:8px;margin:8px 0;color:var(--mu)}
+.lg li b{margin-left:auto;padding-left:18px;color:var(--tx);font-weight:500}
+.lg i{width:8px;height:8px;border-radius:50%}
+.hb{display:grid;grid-template-columns:130px 1fr 28px;gap:12px;align-items:center;margin:12px 0;color:var(--mu)}
+.hb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb div{height:6px;border-radius:9px;background:var(--hov)}
+.hb i{display:block;height:100%;border-radius:9px;background:var(--ac);opacity:.85}
+.hb b{color:var(--tx);font-weight:500;text-align:right}
+.pend{margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;border-left:3px solid #d97706}
+.pend b{font-size:20px;font-weight:600}
+.tabs{display:flex;gap:22px;margin-bottom:20px;border-bottom:1px solid var(--bd)}
+.tabs button{border:0;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;padding:8px 2px;font:inherit;font-weight:500;color:var(--mu);cursor:pointer}
+.tabs button.on{color:var(--tx);border-color:var(--ac)}
+#modal{position:fixed;inset:0;background:rgba(10,15,20,.45);display:none;align-items:center;justify-content:center;padding:14px;z-index:60}
+#modal.open{display:flex;animation:fade .15s}
+#box{background:var(--card);border:1px solid var(--bd);border-radius:14px;width:100%;max-width:540px;max-height:92vh;overflow:auto;box-shadow:0 20px 50px rgba(0,0,0,.2)}
+#box.wide{max-width:820px}
+#mh{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--bd);font-weight:600;font-size:15px}
+#mh button{background:none;border:0;width:28px;height:28px;border-radius:6px;font-size:20px;cursor:pointer;color:var(--mu)}
+#mh button:hover{background:var(--hov);color:var(--tx)}
+#mb{padding:20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fld{display:block;font-weight:500;font-size:12.5px;color:var(--mu)}
+.fld b{color:var(--r)}
+.fld input,.fld select,.fld textarea{display:block;width:100%;margin-top:5px;padding:8px 11px;border:1px solid var(--inb);border-radius:8px;font:inherit;font-weight:400;color:var(--tx);background:var(--card)}
+.fld small{display:none;color:var(--r);font-weight:400;margin-top:3px}
+.fld.bad input,.fld.bad select,.fld.bad textarea{border-color:var(--r)}
+.fld.bad small{display:block}
+.full{grid-column:1/-1}
+.foot{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+#toasts{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:8px;z-index:99}
+.toast{padding:10px 16px;border-radius:8px;background:var(--tbg);color:var(--tfg);border-left:3px solid #22a05a;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:360px;animation:fade .2s}
+.toast.err{border-left-color:#e5534b}
+#print{display:none}
+@media print{body{background:#fff!important}body>*:not(#print){display:none!important}#print{display:block;padding:30px;font-family:Arial,sans-serif;color:#000}#print table{white-space:normal}}
+@media(max-width:820px){#side{transform:translateX(-100%)}#side.open{transform:none;box-shadow:0 0 40px rgba(0,0,0,.25)}#top{display:flex}#main{margin-left:0;padding:68px 14px 24px}.grid,.two{grid-template-columns:1fr}.tools input{min-width:0;flex:1}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="top"><button id="burger" aria-label="Menu">&#9776;</button>Hospital Management<button id="tg2" aria-label="Toggle theme"></button></div>
+<nav id="side"></nav>
+<main id="main"></main>
+<div id="modal"><div id="box"><div id="mh"><span id="mt"></span><button id="mx" aria-label="Close">&times;</button></div><div id="mb"></div></div></div>
+<div id="toasts"></div>
+<div id="print"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today=()=>new Date().toISOString().slice(0,10);
+const money=v=>Number(v||0).toFixed(2);
+
+/* ---------- API / UI helpers ---------- */
+let busy=0;
+function spin(d){busy+=d;$('#bar').style.display=busy>0?'block':'none'}
+function toast(m,t){const e=document.createElement('div');e.className='toast '+(t||'ok');e.textContent=m;$('#toasts').appendChild(e);setTimeout(()=>e.remove(),4500)}
+async function api(url,method,body){
+  spin(1);
+  try{
+    const r=await fetch(url,{method:method||'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined});
+    const txt=await r.text();let d=null;try{d=txt?JSON.parse(txt):null}catch(e){}
+    if(!r.ok){const m=(d&&d.message)||('Request failed ('+r.status+')');toast(m,'err');throw new Error(m)}
+    return d;
+  }catch(e){if(e instanceof TypeError)toast('Cannot reach the server','err');throw e}
+  finally{spin(-1)}
+}
+function modal(title,html,wide){$('#mt').textContent=title;$('#mb').innerHTML=html;$('#box').classList.toggle('wide',!!wide);$('#modal').classList.add('open')}
+function closeModal(){$('#modal').classList.remove('open')}
+$('#mx').onclick=closeModal;
+$('#modal').onclick=e=>{if(e.target.id==='modal')closeModal()};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+function confirmBox(msg,label,fn){
+  modal('Please confirm',`<p>${esc(msg)}</p><div class="foot"><button class="btn ghost" id="cn">Cancel</button><button class="btn danger" id="cy">${label}</button></div>`);
+  $('#cn').onclick=closeModal;
+  $('#cy').onclick=async()=>{closeModal();await fn()};
+}
+
+/* ---------- Schema ---------- */
+const S={};
+const G=['Male','Female','Other'],BG=['A+','A-','B+','B-','AB+','AB-','O+','O-'];
+const fk=(k,l,ref,req)=>({k,l,t:'fk',ref,req:req!==false});
+const ENT={
+ patients:{url:'/api/patients',title:'Patients',fields:[
+  {k:'firstName',l:'First name',req:1},{k:'lastName',l:'Last name',req:1},{k:'dateOfBirth',l:'Date of birth',t:'date',req:1},
+  {k:'gender',l:'Gender',t:'select',opts:G,req:1},{k:'bloodGroup',l:'Blood group',t:'select',opts:BG},
+  {k:'phone',l:'Phone',req:1},{k:'address',l:'Address',t:'textarea'}]},
+ doctors:{url:'/api/doctors',title:'Doctors',fields:[
+  {k:'firstName',l:'First name',req:1},{k:'lastName',l:'Last name',req:1},{k:'phone',l:'Phone'},
+  {k:'email',l:'Email',t:'email'},{k:'specialization',l:'Specialization',req:1},fk('departmentId','Department','departments')]},
+ departments:{url:'/api/departments',title:'Departments',fields:[
+  {k:'departmentName',l:'Department name',req:1},{k:'location',l:'Location'},{k:'phone',l:'Phone'}]},
+ appointments:{url:'/api/appointments',title:'Appointments',fields:[
+  fk('patientId','Patient','patients'),fk('doctorId','Doctor','doctors'),
+  {k:'appointmentDate',l:'Date',t:'date',req:1,def:'today'},{k:'appointmentTime',l:'Time',t:'time',req:1},
+  {k:'reason',l:'Reason'},{k:'status',l:'Status',t:'select',opts:['Scheduled','Completed','Cancelled'],req:1,def:'Scheduled'}]},
+ admissions:{url:'/api/admissions',title:'Admissions',fields:[
+  fk('patientId','Patient','patients'),fk('doctorId','Doctor','doctors'),
+  {k:'admissionDate',l:'Admission date',t:'date',req:1,def:'today'},{k:'dischargeDate',l:'Discharge date',t:'date'},
+  {k:'roomNo',l:'Room no.',req:1},{k:'reason',l:'Reason'},
+  {k:'status',l:'Status',t:'select',opts:['Admitted','Discharged'],req:1,def:'Admitted'}],
+  acts:r=>r.status==='Admitted'?[['discharge','Discharge','ok']]:[]},
+ prescriptions:{url:'/api/prescriptions',title:'Prescriptions',fields:[
+  fk('appointmentId','Appointment','appointments'),{k:'prescriptionDate',l:'Date',t:'date',req:1,def:'today'},{k:'notes',l:'Notes',t:'textarea'}],
+  acts:()=>[['meds','Medicines']]},
+ medicines:{url:'/api/medicines',title:'Medicines',fields:[
+  {k:'medicineName',l:'Medicine name',req:1},{k:'unitPrice',l:'Unit price',t:'number',req:1,money:1},{k:'stockQuantity',l:'Stock quantity',t:'number',req:1}],
+  rowCls:r=>r.stockQuantity<200?'low':''},
+ labTests:{url:'/api/lab-tests',title:'Lab Tests',fields:[
+  {k:'testName',l:'Test name',req:1},{k:'cost',l:'Cost',t:'number',req:1,money:1}]},
+ testResults:{url:'/api/test-results',title:'Test Results',fields:[
+  fk('patientId','Patient','patients'),fk('labTestId','Lab test','labTests'),fk('appointmentId','Appointment','appointments'),
+  {k:'resultValue',l:'Result',req:1},{k:'remarks',l:'Remarks'},{k:'testDate',l:'Test date',t:'date',req:1,def:'today'}]},
+ bills:{url:'/api/bills',title:'Billing',fields:[
+  fk('patientId','Patient','patients'),{k:'billDate',l:'Bill date',t:'date',req:1,def:'today'},
+  {k:'totalAmount',l:'Total amount',t:'number',req:1,money:1},
+  {k:'paymentStatus',l:'Payment status',t:'select',opts:['Pending','Paid'],req:1,def:'Pending'}],
+  acts:r=>(r.paymentStatus!=='Paid'?[['paid','Mark as Paid','ok']]:[]).concat([['print','Print']]),
+  top:()=>`<div class="card pend"><span>Total pending amount</span><b>${money((S.bills||[]).filter(b=>b.paymentStatus==='Pending').reduce((a,b)=>a+Number(b.totalAmount||0),0))}</b></div>`}
+};
+Object.keys(ENT).forEach(k=>S[k]=[]);
+const fullName=r=>r?r.firstName+' '+r.lastName:'';
+const NAME={patients:fullName,doctors:r=>r?'Dr. '+fullName(r):'',departments:r=>r.departmentName,medicines:r=>r.medicineName,labTests:r=>r.testName,
+ appointments:r=>`#${r.id} ${lbl('patients',r.patientId)} – ${r.appointmentDate}`};
+function lbl(ent,id){const r=(S[ent]||[]).find(x=>x.id==id);return r&&NAME[ent]?NAME[ent](r):(id==null?'':'(deleted)')}
+const fetchList=async k=>{S[k]=(await api(ENT[k].url))||[]};
+const loadAll=()=>Promise.all(Object.keys(ENT).map(k=>fetchList(k).catch(()=>{})));
+const pv=(f,r)=>f.t==='fk'?lbl(f.ref,r[f.k]):(r[f.k]==null?'':String(r[f.k]));
+function cell(f,r){
+  const v=pv(f,r);if(v==='')return '<span class="mu">—</span>';
+  if(f.k==='firstName')return `<span class="av" style="--h:${(v.charCodeAt(0)*37)%360}">${esc((v[0]+(r.lastName||' ')[0]).trim().toUpperCase())}</span>`+esc(v);
+  if(f.k==='status'||f.k==='paymentStatus')return `<span class="badge ${esc(v)}">${esc(v)}</span>`;
+  if(f.money)return (f.k==='stockQuantity'?esc(v):money(v));
+  if(f.k==='stockQuantity')return '<b>'+esc(v)+'</b>';
+  if(f.t==='time')return esc(v.slice(0,5));
+  return esc(v.length>50?v.slice(0,48)+'…':v);
+}
+
+/* ---------- Generic CRUD view ---------- */
+let V={key:null,q:''};
+function crud(k,el){
+  const E=ENT[k];V.key=k;
+  el.innerHTML=`<div class="head"><h2>${E.title}</h2><div class="tools"><input id="q" type="search" placeholder="Search ${E.title.toLowerCase()}…" value="${esc(V.q)}"><button class="btn" id="add">+ Add</button></div></div><div id="topx"></div>
+  <div class="card tw"><table><thead><tr>${E.fields.map(f=>`<th>${f.l}</th>`).join('')}<th>Actions</th></tr></thead><tbody id="tb"></tbody></table></div>`;
+  $('#q').oninput=e=>{V.q=e.target.value;rows()};
+  $('#add').onclick=()=>form(k);
+  $('#tb').onclick=e=>{
+    const b=e.target.closest('button');if(!b)return;
+    const r=S[k].find(x=>x.id==b.dataset.id);if(r)act(k,b.dataset.a,r);
+  };
+  rows();
+}
+function rows(){
+  const k=V.key,E=ENT[k],q=V.q.toLowerCase();
+  const list=S[k].filter(r=>!q||E.fields.some(f=>pv(f,r).toLowerCase().includes(q)));
+  $('#topx').innerHTML=E.top?E.top():'';
+  $('#tb').innerHTML=list.length?list.map(r=>`<tr class="${E.rowCls?E.rowCls(r):''}">${E.fields.map(f=>`<td>${cell(f,r)}</td>`).join('')}<td class="act">${(E.acts?E.acts(r):[]).map(a=>`<button class="btn sm ${a[2]||'ghost'}" data-a="${a[0]}" data-id="${r.id}">${a[1]}</button>`).join('')}<button class="btn sm ghost" data-a="edit" data-id="${r.id}">Edit</button><button class="btn sm danger" data-a="del" data-id="${r.id}">Delete</button></td></tr>`).join('')
+   :`<tr><td colspan="${E.fields.length+1}"><div class="empty">${S[k].length?'No records match your search.':'No '+E.title.toLowerCase()+' yet. Use “Add” to create the first one.'}</div></td></tr>`;
+}
+async function refresh(k){await fetchList(k);if(V.key===k&&$('#tb'))rows()}
+async function act(k,a,r){
+  const E=ENT[k];
+  if(a==='edit')return form(k,r);
+  if(a==='del')return confirmBox('Delete this record? This cannot be undone.','Delete',async()=>{
+    try{await api(`${E.url}/${r.id}`,'DELETE');toast('Deleted');await refresh(k)}catch(e){}});
+  try{
+    if(a==='discharge'){await api(`/api/admissions/${r.id}/discharge`,'POST');toast('Patient discharged');await refresh(k)}
+    else if(a==='paid'){const b={};E.fields.forEach(f=>b[f.k]=r[f.k]);b.paymentStatus='Paid';await api(`${E.url}/${r.id}`,'PUT',b);toast('Bill marked as paid');await refresh(k)}
+    else if(a==='print')printBill(r);
+    else if(a==='meds')rxPanel(r);
+  }catch(e){}
+}
+
+/* ---------- Add / Edit form ---------- */
+function input(f,v){
+  const id='f_'+f.k;let h;
+  if(f.t==='fk'||f.t==='select'){
+    const o=f.t==='fk'?S[f.ref].map(r=>[r.id,lbl(f.ref,r.id)]):f.opts.map(x=>[x,x]);
+    h=`<select id="${id}"><option value="">-- Select --</option>${o.map(x=>`<option value="${esc(x[0])}"${String(v)===String(x[0])?' selected':''}>${esc(x[1])}</option>`).join('')}</select>`;
+  }else if(f.t==='textarea')h=`<textarea id="${id}" rows="3">${esc(v)}</textarea>`;
+  else h=`<input id="${id}" type="${f.t||'text'}"${f.t==='number'?' step="any" min="0"':''} value="${esc(f.t==='time'?String(v).slice(0,5):v)}">`;
+  return `<label class="fld${f.t==='textarea'?' full':''}">${f.l}${f.req?' <b>*</b>':''}${h}<small>${f.t==='fk'||f.t==='select'?'Please choose an option':'This field is required'}</small></label>`;
+}
+function form(k,row){
+  const E=ENT[k];
+  modal((row?'Edit ':'Add ')+E.title.replace(/s$/,''),`<form id="fm" novalidate><div class="grid">${E.fields.map(f=>{
+    let v=row?row[f.k]:(f.def==='today'?today():f.def||'');return input(f,v==null?'':v)}).join('')}</div>
+    <div class="foot"><button type="button" class="btn ghost" id="fc">Cancel</button><button class="btn">Save</button></div></form>`);
+  $('#fc').onclick=closeModal;
+  $('#fm').onsubmit=async e=>{
+    e.preventDefault();let ok=true;const body={};
+    E.fields.forEach(f=>{
+      const el=$('#f_'+f.k),v=el.value.trim();
+      const bad=(f.req&&!v)||(f.t==='number'&&v!==''&&Number(v)<0)||(f.t==='email'&&v&&!/^\S+@\S+\.\S+$/.test(v));
+      el.closest('.fld').classList.toggle('bad',!!bad);if(bad)ok=false;
+      body[f.k]=v===''?null:(f.t==='number'||f.t==='fk')?Number(v):v;
+    });
+    if(!ok)return;
+    try{
+      await api(row?`${E.url}/${row.id}`:E.url,row?'PUT':'POST',body);
+      closeModal();toast(row?'Changes saved':'Record added');await refresh(k);
+    }catch(err){}
+  };
+}
+
+/* ---------- Prescription medicines ---------- */
+async function rxPanel(p){
+  let items=[];
+  try{items=(await api(`/api/prescriptions/${p.id}/medicines`))||[]}catch(e){return}
+  modal(`Prescription #${p.id} – ${lbl('patients',(S.appointments.find(a=>a.id==p.appointmentId)||{}).patientId)}`,`
+   <div class="card tw" style="box-shadow:none;border:1px solid var(--bd)"><table><thead><tr><th>Medicine</th><th>Dosage</th><th>Frequency</th><th>Days</th><th>Unit price</th><th></th></tr></thead><tbody>
+   ${items.length?items.map(i=>`<tr><td>${esc(i.medicine_name)}</td><td>${esc(i.dosage)}</td><td>${esc(i.frequency)}</td><td>${esc(i.duration_days)}</td><td>${money(i.unit_price)}</td><td><button class="btn sm danger" data-rm="${i.medicine_id}">Remove</button></td></tr>`).join('')
+   :'<tr><td colspan="6"><div class="empty">No medicines on this prescription yet.</div></td></tr>'}</tbody></table></div>
+   <form id="rf" novalidate style="margin-top:16px"><div class="grid">
+    ${input({k:'medicineId',l:'Medicine',t:'fk',ref:'medicines',req:1},'')}${input({k:'dosage',l:'Dosage',req:1},'')}
+    ${input({k:'frequency',l:'Frequency',req:1},'')}${input({k:'durationDays',l:'Duration (days)',t:'number',req:1},'')}</div>
+   <div class="foot"><button class="btn">+ Add medicine</button></div></form>`,true);
+  $('#mb').onclick=async e=>{
+    const b=e.target.closest('[data-rm]');if(!b)return;
+    try{await api(`/api/prescriptions/${p.id}/medicines/${b.dataset.rm}`,'DELETE');toast('Medicine removed');rxPanel(p)}catch(x){}
+  };
+  $('#rf').onsubmit=async e=>{
+    e.preventDefault();let ok=true;const o={};
+    ['medicineId','dosage','frequency','durationDays'].forEach(k=>{
+      const el=$('#f_'+k),v=el.value.trim(),bad=!v||(k==='durationDays'&&Number(v)<1);
+      el.closest('.fld').classList.toggle('bad',bad);if(bad)ok=false;
+      o[k]=(k==='medicineId'||k==='durationDays')?Number(v):v;
+    });
+    if(!ok)return;
+    try{await api(`/api/prescriptions/${p.id}/medicines`,'POST',o);toast('Medicine added');rxPanel(p)}catch(x){}
+  };
+}
+
+/* ---------- Billing print ---------- */
+function printBill(b){
+  $('#print').innerHTML=`<h1 style="color:#0a6668;margin:0">Hospital Management System</h1><h2>Invoice #${b.id}</h2>
+  <table style="width:100%;border-collapse:collapse" border="1" cellpadding="8">
+  <tr><th align="left">Patient</th><td>${esc(lbl('patients',b.patientId))}</td></tr>
+  <tr><th align="left">Bill date</th><td>${esc(b.billDate)}</td></tr>
+  <tr><th align="left">Total amount</th><td><b>${money(b.totalAmount)}</b></td></tr>
+  <tr><th align="left">Payment status</th><td>${esc(b.paymentStatus)}</td></tr></table>
+  <p style="color:#666">Printed on ${new Date().toLocaleString()}</p>`;
+  window.print();
+}
+
+/* ---------- Dashboard ---------- */
+function charts(all){
+  if(!all.length)return '';
+  const cnt=f=>all.reduce((o,a)=>{const k=f(a)||'Unassigned';o[k]=(o[k]||0)+1;return o},{});
+  const st=cnt(a=>a.status),COL={Scheduled:'#d99a2b',Completed:'#3d9b78',Cancelled:'#cf6a62'},tot=all.length;let acc=0;
+  const grad=Object.entries(st).map(([k,v])=>{const a=acc/tot*100;acc+=v;return `${COL[k]||'#8aa4b0'} ${a}% ${acc/tot*100}%`}).join(',');
+  const dp=Object.entries(cnt(a=>a.department_name)).sort((a,b)=>b[1]-a[1]).slice(0,6),mx=dp[0][1];
+  return `<div class="two"><div class="card"><h4>Appointments by status</h4><div class="donut-w"><div class="donut" style="background:conic-gradient(${grad})"><b>${tot}</b><small>total</small></div><ul class="lg">${Object.entries(st).map(([k,v])=>`<li><i style="background:${COL[k]||'#8aa4b0'}"></i>${esc(k)}<b>${v}</b></li>`).join('')}</ul></div></div>
+  <div class="card"><h4>Busiest departments</h4>${dp.map(([k,v])=>`<div class="hb"><span>${esc(k)}</span><div><i style="width:${v/mx*100}%"></i></div><b>${v}</b></div>`).join('')}</div></div>`;
+}
+async function dash(m){
+  m.innerHTML='<div class="head"><h2>Dashboard</h2></div><div class="empty">Loading…</div>';
+  let d={},ap=[];
+  try{[d,ap]=await Promise.all([api('/api/reports/dashboard'),api('/api/reports/appointments')])}catch(e){}
+  d=d||{};const all=ap||[];ap=all.filter(a=>a.status==='Scheduled').sort((a,b)=>(a.appointment_date+a.appointment_time).localeCompare(b.appointment_date+b.appointment_time));
+  const C=[['Total patients','totalPatients'],['Total doctors','totalDoctors'],['Scheduled appointments','scheduledAppointments'],['Current admissions','currentAdmissions'],['Low-stock medicines','lowStockMedicines'],['Pending amount','pendingAmount']];
+  m.innerHTML=`<div class="head"><div><h2>Dashboard</h2><p class="sub">${new Date().toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</p></div></div>
+  <div class="stats">${C.map((c,i)=>`<div class="card stat"><span>${c[0]}</span><b>${d[c[1]]==null?'–':c[1]==='pendingAmount'?money(d[c[1]]):esc(d[c[1]])}</b></div>`).join('')}</div>
+  ${charts(all)}<h3>Upcoming appointments</h3><div class="card tw"><table><thead><tr><th>Date</th><th>Time</th><th>Patient</th><th>Doctor</th><th>Department</th><th>Reason</th><th>Status</th></tr></thead><tbody>
+  ${ap.length?ap.map(a=>`<tr><td>${esc(a.appointment_date)}</td><td>${esc(String(a.appointment_time||'').slice(0,5))}</td><td>${esc(a.patient_name)}</td><td>${esc(a.doctor_name)}</td><td>${esc(a.department_name)}</td><td>${esc(a.reason)}</td><td><span class="badge ${esc(a.status)}">${esc(a.status)}</span></td></tr>`).join('')
+  :'<tr><td colspan="7"><div class="empty">No upcoming appointments.</div></td></tr>'}</tbody></table></div>`;
+}
+
+/* ---------- Navigation ---------- */
+const PAGES={dashboard:['Dashboard'],patients:['Patients'],doctors:['Doctors'],departments:['Departments'],appointments:['Appointments'],
+ admissions:['Admissions'],prescriptions:['Prescriptions'],medicines:['Medicines'],labs:['Lab Tests & Results'],billing:['Billing']};
+$('#side').innerHTML='<div class="brand"><span class="logo">✚</span><div>Hospital<small>Management System</small></div></div>'+Object.entries(PAGES).map(([k,v])=>`<a href="#${k}" data-p="${k}">${v[0]}</a>`).join('');
+$('#burger').onclick=()=>$('#side').classList.toggle('open');
+$('#side').insertAdjacentHTML('beforeend','<button class="tg" id="tg"></button>');
+function setTheme(t){document.documentElement.dataset.theme=t;try{localStorage.setItem('hms-theme',t)}catch(e){}
+  const d=t==='dark';$('#tg').textContent=d?'Switch to light mode':'Switch to dark mode';$('#tg2').textContent=d?'Light':'Dark'}
+$('#tg').onclick=$('#tg2').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+setTheme(document.documentElement.dataset.theme||'light');
+let labTab='labTests';
+function labs(m){
+  m.innerHTML=`<div class="tabs"><button data-t="labTests" class="${labTab==='labTests'?'on':''}">Lab Tests</button><button data-t="testResults" class="${labTab==='testResults'?'on':''}">Test Results</button></div><div id="lb"></div>`;
+  m.querySelector('.tabs').onclick=async e=>{
+    const b=e.target.closest('button');if(!b)return;labTab=b.dataset.t;V.q='';
+    m.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+    await fetchList(labTab).catch(()=>{});crud(labTab,$('#lb'));
+  };
+  crud(labTab,$('#lb'));
+}
+async function nav(){
+  let p=location.hash.slice(1);if(!PAGES[p])p='dashboard';
+  document.querySelectorAll('#side a').forEach(a=>a.classList.toggle('on',a.dataset.p===p));
+  $('#side').classList.remove('open');V.q='';closeModal();
+  const m=$('#main');
+  if(p==='dashboard')return dash(m);
+  if(p==='labs'){await Promise.all(['labTests','testResults'].map(k=>fetchList(k).catch(()=>{})));return labs(m)}
+  const k=p==='billing'?'bills':p;
+  await fetchList(k).catch(()=>{});
+  crud(k,m);
+}
+window.addEventListener('hashchange',nav);
+loadAll().then(nav);
+</script>
+</body>
+</html>
